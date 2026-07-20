@@ -49,9 +49,9 @@ pip install -r requirements.txt
 \`\`\`
 
 **3. Ejecutar la aplicación:**
-\`\`\`bash
+```bash
 python main.py
-\`\`\`
+```
 
 ---
 
