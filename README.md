@@ -44,9 +44,9 @@ cd KIT_Automatizacion_Archivos
 
 **2. Instalar las dependencias:**
 Es recomendable usar un entorno virtual.
-\`\`\`bash
+```bash
 pip install -r requirements.txt
-\`\`\`
+```
 
 **3. Ejecutar la aplicación:**
 ```bash
@@ -61,9 +61,9 @@ Este proyecto incluye un entorno completo de pruebas para garantizar su fiabilid
 
 Para ejecutar los tests (como `test_organizer.py`, `test_analyzer.py`, `test_auditor.py` y `test_undo.py`), utiliza tu framework de pruebas preferido en la carpeta correspondiente:
 
-\`\`\`bash
+```bash
 pytest tests/
-\`\`\`
+```
 
 > **Nota:** El directorio `tests_sample/` contiene archivos de prueba seguros (como `datos_ventas.csv` o `imagen_evento.jpg`) para no afectar tus archivos reales durante el desarrollo.
 
