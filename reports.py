@@ -18,8 +18,11 @@ CARPETA_REPORTES = "reportes"
 def _ruta_reporte(nombre_base, extension):
     """Construye una ruta unica (con timestamp) dentro de la carpeta 'reportes/'."""
     # Cada reporte recibe una marca de tiempo para evitar sobrescribir archivos
-    # anteriores y facilitar su trazabilidad.
+    # anteriores y facilitar su trazabilidad. Esta funcion es la base de todas
+    # las exportaciones del sistema: TXT, CSV y PNG.
     try:
+        # La carpeta de reportes no siempre existe al inicio, por eso se crea
+        # de forma segura antes de guardar cualquier salida.
         os.makedirs(CARPETA_REPORTES, exist_ok=True)
     except PermissionError as e:
         raise IOError(
@@ -27,6 +30,9 @@ def _ruta_reporte(nombre_base, extension):
             f"Mueve el proyecto fuera de Descargas/Documentos o quita el atributo "
             f"'Solo lectura' de la carpeta. Detalle: {e}"
         )
+    # La fecha y hora actuales se convierten en un identificador unico para
+    # cada archivo generado. Gracias a esto, un mismo reporte puede producirse
+    # varias veces sin perder el historial anterior.
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     return os.path.join(CARPETA_REPORTES, f"{nombre_base}_{timestamp}.{extension}")
 
@@ -37,13 +43,18 @@ def generar_reporte_txt(datos, nombre_base, titulo):
     Genera un reporte de texto legible a partir de un diccionario o
     lista de datos. Retorna la ruta del archivo generado.
     """
+    # El reporte TXT se usa para registros legibles para humanos. Se escribe
+    # una cabecera con titulo, fecha de creacion y, luego, el contenido real.
     ruta = _ruta_reporte(nombre_base, "txt")
     try:
         with open(ruta, "w", encoding="utf-8") as f:
+            # La cabecera hace que el archivo se vea profesional y ordenado.
             f.write(f"{titulo}\n")
             f.write(f"Generado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write("=" * 50 + "\n\n")
 
+            # Los datos pueden venir como diccionario (clave-valor) o como lista
+            # (elementos simples). Cada caso se imprime con un formato distinto.
             if isinstance(datos, dict):
                 for clave, valor in datos.items():
                     f.write(f"{clave}: {valor}\n")
@@ -64,10 +75,13 @@ def generar_reporte_csv(filas, encabezados, nombre_base):
     Genera un reporte CSV a partir de una lista de filas (listas o
     tuplas) y una lista de encabezados de columna.
     """
+    # El formato CSV se usa cuando se desea exportar datos tabulares que luego
+    # puedan abrirse en Excel, LibreOffice o cualquier herramienta de analisis.
     ruta = _ruta_reporte(nombre_base, "csv")
     try:
         with open(ruta, "w", newline="", encoding="utf-8") as f:
             escritor = csv.writer(f)
+            # Primero se escriben los encabezados de la tabla y luego cada fila.
             escritor.writerow(encabezados)
             escritor.writerows(filas)
     except OSError as e:
@@ -79,6 +93,8 @@ def generar_reporte_csv(filas, encabezados, nombre_base):
 @registrar_actividad
 def reporte_organizacion(resultado_clasificacion, nombre_base="reporte_organizacion"):
     """Genera reportes TXT y CSV a partir del resultado de una clasificacion de archivos."""
+    # La salida de organizar archivos es un diccionario con categorias y listas
+    # de archivos. Para el CSV se transforma esa estructura en una tabla simple.
     ruta_txt = generar_reporte_txt(
         resultado_clasificacion, nombre_base, "Reporte de Organizacion de Archivos"
     )
@@ -90,6 +106,9 @@ def reporte_organizacion(resultado_clasificacion, nombre_base="reporte_organizac
 @registrar_actividad
 def reporte_analisis(resultado_analisis, nombre_base="reporte_analisis"):
     """Genera reportes TXT y CSV a partir del resultado del analizador de contenido."""
+    # El analizador devuelve un diccionario con varias secciones. Para el CSV
+    # solo interesa la parte de frecuencias, porque es la que se puede resumir
+    # en columnas de valor y cantidad.
     ruta_txt = generar_reporte_txt(
         resultado_analisis, nombre_base, "Reporte de Analisis de Contenido"
     )
@@ -104,6 +123,9 @@ def reporte_analisis(resultado_analisis, nombre_base="reporte_analisis"):
 @registrar_actividad
 def reporte_auditoria(diferencias, nombre_base="reporte_auditoria"):
     """Genera reportes TXT y CSV a partir del resultado de una auditoria de cambios."""
+    # En auditoria, la estructura de datos tiene tres listas: nuevos,
+    # modificados y eliminados. Se convierten esas listas en filas de CSV para
+    # visualizar cada cambio individualmente.
     ruta_txt = generar_reporte_txt(diferencias, nombre_base, "Reporte de Auditoria de Cambios")
     filas = []
     for tipo_cambio, archivos in diferencias.items():
@@ -124,6 +146,8 @@ def generar_grafico_barras(datos, nombre_base, titulo, etiqueta_x="Categoria", e
     rapida y visual de los resultados de organizacion, analisis o auditoria.
     Si matplotlib no esta instalado, informa y no interrumpe el programa.
     """
+    # Este grafico sirve como complemento visual para resumir los resultados
+    # de una accion en una imagen PNG, especialmente util para presentaciones.
     if not datos:
         print_warn("No hay datos para graficar.")
         return None
@@ -142,12 +166,16 @@ def generar_grafico_barras(datos, nombre_base, titulo, etiqueta_x="Categoria", e
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     ruta = os.path.join(CARPETA_REPORTES, f"{nombre_base}_{timestamp}.png")
 
+    # Para dibujar el grafico, las claves del diccionario se convierten en
+    # categorias del eje X y los valores en alturas de las barras.
     categorias = list(datos.keys())
     valores = list(datos.values())
 
     try:
         fig, ax = plt.subplots(figsize=(7, 4.2))
         barras = ax.bar(categorias, valores, color="#2b5e8c")
+        # Se configuran etiquetas del grafico para que la salida sea clara y
+        # facil de interpretar con una simple mirada.
         ax.set_title(titulo)
         ax.set_xlabel(etiqueta_x)
         ax.set_ylabel(etiqueta_y)
