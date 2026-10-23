@@ -1,0 +1,8 @@
+Reporte de Analisis de Contenido
+Generado: 2026-07-23 10:43:36
+==================================================
+
+tipo_patron: fechas
+resumen_por_archivo: {'contactos.txt': 3, 'datos_ventas.csv': 4, 'notas_reunion.txt': 2, 'script_backup.py': 0}
+coincidencias_unicas: ['02/07/2024', '04/12/2025', '10/01/2025', '11/01/2025', '12/01/2025', '15/03/2024', '27/11/2025', '30/11/2025']
+frecuencias: {'15/03/2024': 1, '02/07/2024': 1, '30/11/2025': 1, '10/01/2025': 2, '11/01/2025': 1, '12/01/2025': 1, '27/11/2025': 1, '04/12/2025': 1}

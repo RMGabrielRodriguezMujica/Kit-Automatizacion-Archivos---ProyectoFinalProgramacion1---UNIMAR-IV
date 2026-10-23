@@ -1,0 +1,7 @@
+Reporte de Auditoria de Cambios
+Generado: 2026-07-23 10:45:32
+==================================================
+
+nuevos: []
+modificados: []
+eliminados: ['contactos.txt', 'datos_ventas.csv', 'imagen_evento.jpg', 'notas_reunion.txt', 'reporte_enero.pdf', 'script_backup.py']
